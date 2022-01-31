@@ -1,2 +1,7 @@
-# ProjectProteusUtils
-https://www.nexusmods.com/skyrimspecialedition/mods/46620?tab=description&amp;BH=0
+# ProjectProteus
+
+## Build Dependencies
+* [CommonLibSSE](https://github.com/Ryan-rsm-McKenzie/CommonLibSSE)
+
+## End User Dependencies
+* [SKSE64](https://skse.silverlock.org/)
