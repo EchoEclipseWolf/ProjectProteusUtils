@@ -74,7 +74,7 @@ target_include_directories(
 		"${SOURCE_DIR}"
 )
 
-add_subdirectory("${ROOT_DIR}/external/CommonLibSSE" CommonLibSSE)
+add_subdirectory("${ROOT_DIR}/external/SE/CommonLibSSE" CommonLibSSE)
 
 target_link_libraries(
 	"${PROJECT_NAME}"

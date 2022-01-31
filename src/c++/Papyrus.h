@@ -19,9 +19,9 @@ namespace Papyrus
 		static inline RE::BGSPerk* GetCurrentStandingStonePerk(RE::StaticFunctionTag*, const RE::PlayerCharacter* a_actor)
 		{
 			if (const auto player = RE::PlayerCharacter::GetSingleton(); player == a_actor) {
-				for (int i = 0; i < a_actor->standingStonePerks.size(); ++i) {
+				for (uint32_t i = 0; i < a_actor->standingStonePerks.size(); ++i) {
 					const auto incAmt = static_cast<uint64_t>(0x8) * static_cast<uint64_t>(i * 2);
-					const auto list = *(uint64_t*)(reinterpret_cast<uint64_t>(a_actor) + static_cast<uint64_t>(0x4E0));
+					const auto list = *reinterpret_cast<uint64_t*>(reinterpret_cast<uint64_t>(a_actor) + static_cast<uint64_t>(0x4E0));
 					const auto currentPerkAddress = *reinterpret_cast<uint64_t*>(list + incAmt);
 					const auto currentPerk = reinterpret_cast<RE::BGSPerk*>(currentPerkAddress);
 					if (currentPerk != nullptr) {
