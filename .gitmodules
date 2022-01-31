@@ -1,3 +1,6 @@
-[submodule "external/AE"]
-	path = external/AE
+[submodule "external/AE/CommonLibSSE"]
+	path = external/AE/CommonLibSSE
+	url = https://github.com/Ryan-rsm-McKenzie/CommonLibSSE
+[submodule "external/SE/CommonLibSSE"]
+	path = external/SE/CommonLibSSE
 	url = https://github.com/Ryan-rsm-McKenzie/CommonLibSSE
