@@ -6,14 +6,6 @@
         "CMAKE_BUILD_TYPE": {
           "type": "STRING",
           "value": "Debug"
-        },
-        "CMAKE_INTERPROCEDURAL_OPTIMIZATION": {
-          "type": "BOOL",
-          "value": "ON"
-        },
-        "CMAKE_INTERPROCEDURAL_OPTIMIZATION_DEBUG": {
-          "type": "BOOL",
-          "value": "OFF"
         }
       },
       "errors": {
@@ -51,12 +43,20 @@
       "name": "windows"
     },
     {
-      "architecture": {
-        "strategy": "set",
-        "value": "x64"
-      },
       "cacheVariables": {
-        "CMAKE_CXX_FLAGS": "/EHsc /MP /W4 /WX"
+        "CMAKE_CXX_FLAGS": "/EHsc /MP /W4 /WX /external:anglebrackets /external:W0 $penv{CXXFLAGS}"
+      },
+      "generator": "Visual Studio 16 2019",
+      "inherits": [
+        "cmake-dev",
+        "vcpkg",
+        "windows"
+      ],
+      "name": "vs2019-windows-vcpkg"
+    },
+    {
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "/EHsc /MP /W4 /WX $penv{CXXFLAGS}"
       },
       "generator": "Visual Studio 17 2022",
       "inherits": [
@@ -64,9 +64,9 @@
         "vcpkg",
         "windows"
       ],
-      "name": "vs2022-windows",
+      "name": "vs2022-windows-vcpkg",
       "toolset": "v143"
     }
   ],
-  "version": 3
+  "version": 2
 }

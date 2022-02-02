@@ -190,7 +190,7 @@ namespace Papyrus
 		{
 			const auto start = std::chrono::steady_clock::now();
 
-			std::vector<RE::SpellItem*> result;
+			std::vector<RE::TESBoundObject*> result;
 
 			const auto player = RE::PlayerCharacter::GetSingleton();
 			if (player == nullptr) {
@@ -198,41 +198,23 @@ namespace Papyrus
 			}
 
 			auto inv = player->GetInventory();
+			int invCount = 0;
 			for (const auto& [item, data] : inv) {
 				if (item->Is(RE::FormType::LeveledItem)) {
 					continue;
 				}
 				const auto& [count, entry] = data;
+				invCount += count;
 				if (count > 0 && entry->IsFavorited()) {
 					result.push_back(item);
-				}
-			}
-
-			
-
-			logger::info("Found {} Favorited Items", result.size());
-
-			/* while (!entryList->empty()) {
-				const auto item = entryList->emplace_front();
-				if (item != nullptr) {
-					logger::info("		Found {}", item->GetDisplayName());
-				}
-			}*/
-			
-
-			if (RE::MagicFavorites::GetSingleton() == nullptr) {
-				return result;
-			}
-
-			for (const std::vector<RE::SpellItem*> spells = GetAllSpells(tag, player); auto spell : spells) {
-				if (IsFavoritedSpell(spell)) {
-					result.emplace_back(spell);
+					logger::info("		Found Favorite Item: {}", entry->GetDisplayName());
 				}
 			}
 
 			const auto end = std::chrono::steady_clock::now();
 			const auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
+			logger::info("Found {} Inventory Items", invCount);
 			logger::info("Found {} Favorited Items", result.size());
 			logger::info("		Favorited Items Time: {}", diff.count());
 			return result;

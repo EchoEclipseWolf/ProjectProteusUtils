@@ -1,8 +1,13 @@
 {
   "name": "project-proteus-util-sse",
   "version-string": "1",
+  "description": "A reverse engineered resource for developing F4SE plugins for Skyrim Special Edition",
+  "homepage": "https://github.com/Ryan-rsm-McKenzie/CommonLibSSE",
+  "license": "MIT",
+  "supports": "windows & x64",
   "dependencies": [
     "boost-stl-interfaces",
+    "fmt",
     "rsm-binary-io",
     "spdlog"
   ]
