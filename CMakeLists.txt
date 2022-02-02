@@ -23,5 +23,6 @@ if(NOT DEFINED Skyrim64Path)
 endif()
 
 option(COPY_OUTPUT "copy the output of build operations to the game directory" OFF)
+option(AE_VERSION "should we build the AE version? Default is SE" OFF)
 
 add_subdirectory(src)

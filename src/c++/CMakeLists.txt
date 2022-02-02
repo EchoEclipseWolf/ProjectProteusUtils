@@ -74,7 +74,13 @@ target_include_directories(
 		"${SOURCE_DIR}"
 )
 
-add_subdirectory("${ROOT_DIR}/external/SE/CommonLibSSE" CommonLibSSE)
+if(AE_VERSION)
+  add_compile_definitions(ANNIVERSARY_EDITION)
+  add_subdirectory("${ROOT_DIR}/external/AE/CommonLibSSE" CommonLibSSE)
+else()
+  add_subdirectory("${ROOT_DIR}/external/SE/CommonLibSSE" CommonLibSSE)
+endif()
+
 
 target_link_libraries(
 	"${PROJECT_NAME}"
