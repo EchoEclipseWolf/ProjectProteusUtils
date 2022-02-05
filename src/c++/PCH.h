@@ -22,3 +22,5 @@ namespace logger = SKSE::log;
 namespace stl = SKSE::stl;
 
 #define DLLEXPORT __declspec(dllexport)
+
+#include "Common.h"

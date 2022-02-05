@@ -1,6 +1,5 @@
 #include "Events.h"
-#include "Papyrus.h"
-#include "Plugin.h"
+#include "Papyrus/Papyrus.h"
 #include "spdlog/sinks/basic_file_sink.h"
 
 #define NDEBUG
@@ -26,7 +25,7 @@ namespace
 			stl::report_and_fail("Failed to find standard logging directory"sv);
 		}
 
-		*path /= fmt::format("{}.log", Plugin::NAME);
+		*path /= fmt::format("Proteus.log");
 		auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
 #endif
 
@@ -63,7 +62,7 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
 {
 	a_info->infoVersion = SKSE::PluginInfo::kVersion;
-	a_info->name = "ProjectProteus";
+	a_info->name = "Proteus";
 	a_info->version = 1;
 
 	if (a_skse->IsEditor()) {
@@ -83,7 +82,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
 {
 	InitializeLog();
-	logger::info("{} v{}"sv, Plugin::NAME, Plugin::VERSION.string());
+	logger::info("Proteus v{}"sv, "1.0.0");
 
 	SKSE::Init(a_skse);
 
@@ -93,7 +92,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	}
 
 	const auto papyrus = SKSE::GetPapyrusInterface();
-	if (!papyrus->Register(Papyrus::Register)) {
+	if (!papyrus->Register(Papyrus::Bind)) {
 		logger::critical("Failed to register papyrus callback"sv);
 		return false;
 	}
