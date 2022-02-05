@@ -213,7 +213,7 @@ if (MSVC)
 			/external:W0
 
 			/W4	# Warning level
-			/WX # Warning level (warnings are errors)
+			/WX- # Warning level (warnings are errors)
 
 			"$<$<CONFIG:DEBUG>:/bigobj>"
 			"$<$<CONFIG:RELEASE>:/Zc:inline;/JMC-;/Ob3>"
@@ -222,7 +222,7 @@ if (MSVC)
 	target_link_options(
 		${PROJECT_NAME}
 		PRIVATE
-			/WX	# Treat Linker Warnings as Errors
+			/WX-	# Treat Linker Warnings as Errors
 
 			"$<$<CONFIG:DEBUG>:/INCREMENTAL;/OPT:NOREF;/OPT:NOICF>"
 			"$<$<CONFIG:RELEASE>:/INCREMENTAL:NO;/OPT:REF;/OPT:ICF;/DEBUG:FULL>"
