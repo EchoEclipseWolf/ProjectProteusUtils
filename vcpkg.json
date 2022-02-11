@@ -7,8 +7,11 @@
   "supports": "windows & x64",
   "dependencies": [
     "boost-stl-interfaces",
+	"frozen",
+	"robin-hood-hashing",
     "fmt",
     "rsm-binary-io",
-    "spdlog"
+    "spdlog",
+	"xbyak"
   ]
 }

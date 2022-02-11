@@ -29,7 +29,7 @@ macro(find_ae_commonlib_path)
 		# Check extern
 		find_path(CommonLibPath
 		include/REL/Relocation.h
-		PATHS external/SE/${CommonLibName})
+		PATHS external/AE/${CommonLibName})
 		if (${CommonLibPath} STREQUAL "CommonLibPath-NOTFOUND")
 			#Check path
 			set_from_environment(${CommonLibName}Path)
@@ -65,6 +65,9 @@ else()
 	"Building ${NAME} ${VERSION} for Skyrim SE at ${Skyrim64Path} with ${CommonLibName} at ${CommonLibPath}."
   )
 endif()
+
+set(Boost_USE_STATIC_RUNTIME OFF CACHE BOOL "")
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "")
 
 # ---- Project ----
 
@@ -124,6 +127,8 @@ else ()
 	)
 endif ()
 
+find_package(frozen CONFIG REQUIRED)
+
 # ---- Add source files ----
 
 include(cmake/headerlist.cmake)
@@ -175,6 +180,7 @@ target_link_libraries(
 	${PROJECT_NAME}
 	PRIVATE
 		${CommonLibName}::${CommonLibName}
+		frozen::frozen
 )
 
 if (MSVC)
@@ -239,4 +245,13 @@ target_precompile_headers(
 		src/C++/PCH.h
 )
 
+# ---- Post build ----
 
+if (COPY_OUTPUT)
+	add_custom_command(
+		TARGET ${PROJECT_NAME}
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> G:/ModOrganizer2/mods/PROTEUS/SKSE/plugins/
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_PDB_FILE:${PROJECT_NAME}> G:/ModOrganizer2/mods/PROTEUS/SKSE/plugins/
+	)
+endif ()

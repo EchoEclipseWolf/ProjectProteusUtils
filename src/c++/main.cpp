@@ -1,6 +1,13 @@
 #include "Events.h"
 #include "Papyrus/Papyrus.h"
 #include "spdlog/sinks/basic_file_sink.h"
+#include "Papyrus/Game/EditorIdCache.h"
+
+#if ANNIVERSARY_EDITIO
+
+#else
+#include "Papyrus/Game/versiondb.h"
+#endif
 
 #define NDEBUG
 
@@ -48,8 +55,8 @@ namespace
 extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
 	SKSE::PluginVersionData v;
 
-	v.PluginVersion(Plugin::VERSION);
-	v.PluginName(Plugin::NAME);
+	v.PluginVersion(REL::Version(1, 0, 0, 1));
+	v.PluginName("Proteus");
 
 	v.UsesAddressLibrary(true);
 	v.CompatibleVersions({ SKSE::RUNTIME_LATEST });
@@ -74,6 +81,12 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a
 		return false;
 	}
 
+	/* VersionDb db;
+	if (!db.Load(1, 5, 97, 0)) {
+		return false;
+	}
+	db.Dump("offsets-1.5.97.0.txt");*/
+
 	return true;
 }
 
@@ -82,7 +95,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
 {
 	InitializeLog();
-	logger::info("Proteus v{}"sv, "1.0.0");
+	logger::info("Proteus v{}"sv, "1.0.2");
 
 	SKSE::Init(a_skse);
 

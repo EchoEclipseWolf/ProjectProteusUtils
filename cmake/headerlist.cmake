@@ -5,5 +5,16 @@ set(headers ${headers}
 	src/C++/Papyrus/Functions/Perks.h
 	src/C++/Papyrus/Functions/Spells.h
 	src/C++/Papyrus/Functions/Items.h
+	src/C++/Papyrus/Functions/Outfit.h
+	src/C++/Papyrus/Functions/Actor.h
+	src/C++/Papyrus/Functions/Utility.h
+	src/C++/Papyrus/Functions/Form.h
+	src/C++/Papyrus/Game/EditorIdCache.h
+	src/C++/Papyrus/Game/KeywordManager.h
+	src/C++/Papyrus/Game/DataMap.h
+	src/C++/Papyrus/Game/DataSet.h
+	src/C++/Papyrus/Game/Graphics.h
+	src/C++/Papyrus/Game/versiondb.h
 	src/C++/Papyrus/Papyrus.h
+	src/C++/robin_hood.h
 )

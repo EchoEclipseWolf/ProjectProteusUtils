@@ -35,7 +35,7 @@ namespace Papyrus::Spell
 		return result;
 	}
 
-	inline auto IsFavoritedSpell(RE::SpellItem* spell)
+	inline auto IsFavoritedSpell(RE::StaticFunctionTag* tag, RE::SpellItem* spell)
 	{
 		const auto magicFavorites = RE::MagicFavorites::GetSingleton();
 		if (magicFavorites == nullptr) {
@@ -67,7 +67,7 @@ namespace Papyrus::Spell
 		}
 
 		for (const std::vector<RE::SpellItem*> spells = GetAllSpells(tag, player); auto spell : spells) {
-			if (IsFavoritedSpell(spell)) {
+			if (IsFavoritedSpell(tag, spell)) {
 				result.emplace_back(spell);
 			}
 		}
@@ -127,6 +127,19 @@ namespace Papyrus::Spell
 
 		logger::info("Found {} shouts", result.size());
 		return result;
+	}
+
+	inline auto SetShoutAsKnown(RE::StaticFunctionTag*, const RE::TESShout* shout, bool shouldKnow)
+	{
+		if (shout == nullptr) {
+			return 0;
+		}
+
+		
+		
+
+		//logger::info("Found {} shouts", shout);
+		return 1;
 	}
 
 	inline void Bind(VM& a_vm)
