@@ -3,7 +3,7 @@
 
 namespace Papyrus::Item
 {
-	static inline std::map<RE::FormType, RE::BSTArray<RE::TESForm*>> _formCache;
+	static inline std::map<RE::FormType, std::vector<RE::TESForm*>> _formCache;
 
 	inline bool can_be_taken(const std::unique_ptr<RE::InventoryEntryData>& a_entry, bool a_noEquipped, bool a_noFavourited, bool a_noQuestItem)
 	{
@@ -105,8 +105,12 @@ namespace Papyrus::Item
 			return;
 		}
 		const auto& items = handler->GetFormArray(type);
+		std::vector<RE::TESForm*> results;
+		for (auto item : items) {
+			results.push_back(item);
+		}
 
-		_formCache[type] = items;
+		_formCache[type] = results;
 	}
 
 	inline auto ProteusGetItemCount(RE::StaticFunctionTag* tag, RE::BSFixedString containsName, RE::FormType formType)
@@ -148,7 +152,60 @@ namespace Papyrus::Item
 		return 0;
 	}
 
-	inline auto ProteusGetItemBySearch(RE::StaticFunctionTag* tag, RE::BSFixedString containsName, RE::FormType formType)
+	inline auto ProteusGetAllByFormId(RE::StaticFunctionTag* tag, RE::FormType formType)
+	{
+		const auto start = std::chrono::steady_clock::now();
+
+		std::vector<RE::TESForm*> result;
+
+		AddForms(formType);
+
+		if (_formCache.contains(formType)) {
+			const auto items = _formCache[formType];
+			int count = items.size();
+
+			for (auto item : items) {
+				result.push_back(item);
+			}
+
+			const auto end = std::chrono::steady_clock::now();
+			const auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+			logger::info("Found {} total form items", count);
+			logger::info("		Total Found Time: {}", diff.count());
+		}
+
+		return result;
+	}
+
+	inline auto ProteusGetAllInModByFormId(VM* a_vm, StackID a_stackID, RE::StaticFunctionTag* tag, RE::FormType formType, RE::BSFixedString a_modName)
+	{
+		const auto start = std::chrono::steady_clock::now();
+
+		std::vector<RE::TESForm*> result;
+
+		AddForms(formType);
+
+		if (_formCache.contains(formType)) {
+			const auto items = _formCache[formType];
+
+			for (auto item : items) {
+				if (Form::ProteusIsFormInMod(a_vm, a_stackID, tag, item, a_modName)) {
+					result.push_back(item);
+				}
+			}
+
+			const auto end = std::chrono::steady_clock::now();
+			const auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+			logger::info("Found {} total form items in Mod {}", result.size(), a_modName);
+			logger::info("		Total Found Time: {}", diff.count());
+		}
+
+		return result;
+	}
+
+	inline auto ProteusGetItemBySearch(RE::StaticFunctionTag* tag, RE::BSFixedString containsName, RE::FormType formType, RE::BSFixedString a_modName)
 	{
 		const auto start = std::chrono::steady_clock::now();
 
@@ -159,7 +216,10 @@ namespace Papyrus::Item
 		const auto strContains = std::string(containsName);
 
 		if (_formCache.contains(formType)) {
-			const auto items = _formCache[formType];
+			auto items = _formCache[formType];
+			if (!a_modName.empty()) {
+				items = ProteusGetAllInModByFormId(nullptr, 0, tag, formType, a_modName);
+			}
 			int count = 0;
 			for (const auto item : items) {
 				if (item != nullptr) {
@@ -189,7 +249,7 @@ namespace Papyrus::Item
 		return result;
 	}
 
-	inline auto ProteusGetItemEditorIdBySearch(VM* vm, StackID sid, RE::StaticFunctionTag* tag, RE::BSFixedString containsName, RE::FormType formType)
+	inline auto ProteusGetItemEditorIdBySearch(VM* vm, StackID sid, RE::StaticFunctionTag* tag, RE::BSFixedString containsName, RE::FormType formType, RE::BSFixedString a_modName)
 	{
 		const auto start = std::chrono::steady_clock::now();
 
@@ -200,7 +260,10 @@ namespace Papyrus::Item
 		const auto strContains = std::string(containsName);
 
 		if (_formCache.contains(formType)) {
-			const auto items = _formCache[formType];
+			auto items = _formCache[formType];
+			if (!a_modName.empty()) {
+				items = ProteusGetAllInModByFormId(nullptr, 0, tag, formType, a_modName);
+			}
 			int count = 0;
 			for (const auto item : items) {
 				if (item != nullptr) {
@@ -228,31 +291,7 @@ namespace Papyrus::Item
 		return result;
 	}
 
-	inline auto ProteusGetAllByFormId(RE::StaticFunctionTag* tag, RE::FormType formType)
-	{
-		const auto start = std::chrono::steady_clock::now();
-
-		std::vector<RE::TESForm*> result;
-
-		AddForms(formType);
-
-		if (_formCache.contains(formType)) {
-			const auto items = _formCache[formType];
-			int count = items.size();
-
-			for (auto item : items) {
-				result.push_back(item);
-			}
-
-			const auto end = std::chrono::steady_clock::now();
-			const auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-
-			logger::info("Found {} total form items", count);
-			logger::info("		Total Found Time: {}", diff.count());
-		}
-
-		return result;
-	}
+	
 
 	inline void Bind(VM& a_vm)
 	{
@@ -262,6 +301,7 @@ namespace Papyrus::Item
 		BIND(ProteusGetItemEditorIdBySearch);
 		BIND(ProteusGetAllByFormId);
 		BIND(ProteusAddAllItemsToArray);
+		BIND(ProteusGetAllInModByFormId);
 
 		logger::info("Registered Proteus Item functions");
 	}

@@ -19,8 +19,4 @@ set(headers ${headers}
 	src/C++/Papyrus/Papyrus.h
 	src/C++/robin_hood.h
 	src/C++/BinaryTools/Span.h
-	src/C++/BinaryTools/MemoryBuffer.h
-	src/C++/BinaryTools/BinaryWriter.h
-	src/C++/BinaryTools/BinaryReader.h
-	src/C++/BinaryTools/Binary.h
 )

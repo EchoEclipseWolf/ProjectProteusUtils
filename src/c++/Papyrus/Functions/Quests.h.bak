@@ -1,0 +1,19 @@
+#pragma once
+
+namespace Papyrus::Quests
+{
+	inline auto QuestTest(VM* a_vm, StackID a_stackID, RE::StaticFunctionTag* tag)
+	{
+		logger::info("DLL Is Loaded and connected");
+		return 1;
+	}
+
+
+	
+	inline void Bind(VM& a_vm)
+	{
+		BIND(QuestTest);
+		
+		logger::info("Registered Proteus Utility functions");
+	}
+}

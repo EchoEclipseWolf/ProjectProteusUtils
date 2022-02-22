@@ -8,6 +8,7 @@
 #include "Papyrus/Functions/Actor.h"
 #include "Papyrus/Functions/Utility.h"
 #include "Papyrus/Functions/Form.h"
+#include "Papyrus/Functions/Quests.h"
 
 namespace Papyrus
 {
@@ -25,6 +26,7 @@ namespace Papyrus
 		Actor::Bind(*a_vm);
 		Utility::Bind(*a_vm);
 		Form::Bind(*a_vm);
+		Quests::Bind(*a_vm);
 
 		return true;
 	}
