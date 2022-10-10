@@ -2,72 +2,36 @@ cmake_minimum_required(VERSION 3.22)
 set(NAME "Proteus")
 set(VERSION 1.0.0)
 
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# ---- Cache build vars ----
 
 macro(set_from_environment VARIABLE)
-	if(NOT DEFINED ${VARIABLE} AND DEFINED ENV{${VARIABLE}})
+	if (NOT DEFINED ${VARIABLE} AND DEFINED ENV{${VARIABLE}})
 		set(${VARIABLE} $ENV{${VARIABLE}})
-	endif()
+	endif ()
 endmacro()
 
-macro(find_se_commonlib_path)
-	if (CommonLibName AND NOT ${CommonLibName} STREQUAL "")
-		# Check extern
-		find_path(CommonLibPath
-		include/REL/Relocation.h
-		PATHS external/SE/${CommonLibName})
-		if (${CommonLibPath} STREQUAL "CommonLibPath-NOTFOUND")
-			#Check path
-			set_from_environment(${CommonLibName}Path)
-			set(CommonLibPath ${${CommonLibName}Path})
-		endif()
-	endif()
-endmacro()
-
-macro(find_ae_commonlib_path)
-	if (CommonLibName AND NOT ${CommonLibName} STREQUAL "")
-		# Check extern
-		find_path(CommonLibPath
-		include/REL/Relocation.h
-		PATHS external/AE/${CommonLibName})
-		if (${CommonLibPath} STREQUAL "CommonLibPath-NOTFOUND")
-			#Check path
-			set_from_environment(${CommonLibName}Path)
-			set(CommonLibPath ${${CommonLibName}Path})
-		endif()
-	endif()
-endmacro()
-
-option(COPY_OUTPUT "copy the output of build operations to the game directory" OFF)
-option(AE_VERSION "should we build the AE version? Default is SE" OFF)
-
-include(cmake/headerlist.cmake)
-include(cmake/sourcelist.cmake)
-
-set_from_environment(Skyrim64Path)
+set_from_environment(VCPKG_ROOT)
 set(CommonLibName "CommonLibSSE")
+set_from_environment(Skyrim64Path)
+set(SkyrimPath ${Skyrim64Path})
+set(SkyrimVersion "Skyrim SSE")
 
-if(NOT DEFINED Skyrim64Path)
-	message(FATAL_ERROR "Skyrim64Path is not set")
-endif()
+message(
+	STATUS
+	"Building ${NAME} ${VERSION}."
+)
 
-if(AE_VERSION)
-  find_ae_commonlib_path()
-  add_compile_definitions(ANNIVERSARY_EDITION)
-  message(
-	STATUS
-	"Building ${NAME} ${VERSION} for Skyrim AE at ${Skyrim64Path} with ${CommonLibName} at ${CommonLibPath}."
-  )
-else()
-  find_ae_commonlib_path()
-  message(
-	STATUS
-	"Building ${NAME} ${VERSION} for Skyrim SE at ${Skyrim64Path} with ${CommonLibName} at ${CommonLibPath}."
-  )
-endif()
+if (DEFINED VCPKG_ROOT)
+	set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+	set(VCPKG_TARGET_TRIPLET "x64-windows-static" CACHE STRING "")
+else ()
+	message(
+		WARNING
+		"Variable VCPKG_ROOT is not set. Continuing without vcpkg."
+	)
+endif ()
 
 set(Boost_USE_STATIC_RUNTIME OFF CACHE BOOL "")
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "")
 
 # ---- Project ----
 
@@ -100,11 +64,11 @@ endif()
 
 # ---- Globals ----
 
-if (MSVC)
-	add_compile_definitions(
-		_UNICODE
-	)
+add_compile_definitions(
+	SKSE_SUPPORT_XBYAK
+)
 
+if (MSVC)
 	if (NOT ${CMAKE_GENERATOR} STREQUAL "Ninja")
 		add_compile_options(
 			/MP	# Build with Multiple Processes
@@ -116,18 +80,14 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_DEBUG OFF)
 
 set(Boost_USE_STATIC_LIBS ON)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "")
 
 # ---- Dependencies ----
-if (DEFINED CommonLibPath AND NOT ${CommonLibPath} STREQUAL "" AND IS_DIRECTORY ${CommonLibPath})
-	add_subdirectory(${CommonLibPath} ${CommonLibName})
-else ()
-	message(
-		FATAL_ERROR
-		"Variable ${CommonLibName}Path is not set."
-	)
-endif ()
 
+find_package(CommonLibSSE CONFIG REQUIRED)
 find_package(frozen CONFIG REQUIRED)
+find_package(robin_hood CONFIG REQUIRED)
+find_path(SIMPLEINI_INCLUDE_DIRS "ConvertUTF.c")
 
 # ---- Add source files ----
 
@@ -168,12 +128,18 @@ target_compile_features(
 		cxx_std_23
 )
 
+target_compile_definitions(
+	${PROJECT_NAME}
+	PRIVATE
+		_UNICODE
+)
+
 target_include_directories(
 	${PROJECT_NAME}
 	PRIVATE
 		${CMAKE_CURRENT_BINARY_DIR}/include
 		${CMAKE_CURRENT_SOURCE_DIR}/src/C++
-		${CommonLibPath}/x64/Release
+		${SIMPLEINI_INCLUDE_DIRS}
 )
 
 target_link_libraries(
@@ -181,6 +147,13 @@ target_link_libraries(
 	PRIVATE
 		${CommonLibName}::${CommonLibName}
 		frozen::frozen
+		robin_hood::robin_hood
+)
+
+target_precompile_headers(
+	${PROJECT_NAME}
+	PRIVATE
+		src/c++/PCH.h
 )
 
 if (MSVC)
@@ -237,21 +210,4 @@ if (MSVC)
 	# fix a warning with /Ob2 being overridden with /Ob3
 	string(REPLACE "/Ob2" "/Ob3" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
 
-endif ()
-
-target_precompile_headers(
-	${PROJECT_NAME}
-	PRIVATE
-		src/C++/PCH.h
-)
-
-# ---- Post build ----
-
-if (COPY_OUTPUT)
-	add_custom_command(
-		TARGET ${PROJECT_NAME}
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> C:/ModOrganizer2/mods/PROTEUS/SKSE/plugins/
-		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_PDB_FILE:${PROJECT_NAME}> C:/ModOrganizer2/mods/PROTEUS/SKSE/plugins/
-	)
 endif ()
