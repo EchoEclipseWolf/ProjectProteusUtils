@@ -3,12 +3,6 @@
 #include "spdlog/sinks/basic_file_sink.h"
 #include "Papyrus/Game/EditorIdCache.h"
 
-#if ANNIVERSARY_EDITIO
-
-#else
-#include "Papyrus/Game/versiondb.h"
-#endif
-
 #define NDEBUG
 
 namespace

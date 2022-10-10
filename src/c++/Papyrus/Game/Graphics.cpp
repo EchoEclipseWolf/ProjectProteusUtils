@@ -25,7 +25,7 @@ namespace RESET
 
 		if (const auto processLists = RE::ProcessLists::GetSingleton(); processLists) {
 			auto handle = a_ref->CreateRefHandle();
-			processLists->GetShaderEffects([&](RE::ShaderReferenceEffect& a_shaderEffect) {
+			processLists->ForEachShaderEffect([&](RE::ShaderReferenceEffect& a_shaderEffect) {
 				if (a_shaderEffect.target == handle) {
 					if (const auto effectData = a_shaderEffect.effectData; effectData &&
 																		   effectData->data.flags.all(Flags::kSkinOnly) &&
@@ -33,7 +33,7 @@ namespace RESET
 						a_shaderEffect.finished = true;
 					}
 				}
-				return true;
+				return RE::BSContainer::ForEachResult::kContinue;
 			});
 		}
 	}
@@ -218,8 +218,8 @@ namespace RESET
 
 						lightingShader->SetMaterial(newMaterial, true);
 
-						lightingShader->InitializeGeometry(a_geometry);
-						lightingShader->InitializeShader(a_geometry);
+						lightingShader->SetupGeometry(a_geometry);
+						lightingShader->FinishSetupGeometry(a_geometry);
 
 						newMaterial->~BSLightingShaderMaterialBase();
 						RE::free(newMaterial);
@@ -387,8 +387,8 @@ namespace RESET
 						lightingShader->emissiveMult = emissiveMult;
 
 						lightingShader->SetMaterial(newMaterial, true);
-						lightingShader->InitializeGeometry(a_geometry);
-						lightingShader->InitializeShader(a_geometry);
+						lightingShader->SetupGeometry(a_geometry);
+						lightingShader->FinishSetupGeometry(a_geometry);
 
 						newMaterial->~BSLightingShaderMaterialBase();
 						RE::free(newMaterial);
@@ -447,7 +447,7 @@ namespace SET
 						lightingShader->SetFlags(Flag::kFaceGenRGBTint, true);
 
 						lightingShader->SetMaterial(facegenTint, true);
-						lightingShader->InitializeShader(geometry);
+						lightingShader->FinishSetupGeometry(geometry);
 
 						facegenTint->~BSLightingShaderMaterialFacegenTint();
 						RE::free(facegenTint);
@@ -525,8 +525,8 @@ namespace SET
 
 								lightingShader->SetMaterial(newMaterial, true);
 
-								lightingShader->InitializeGeometry(a_geometry);
-								lightingShader->InitializeShader(a_geometry);
+								lightingShader->SetupGeometry(a_geometry);
+								lightingShader->FinishSetupGeometry(a_geometry);
 
 								newMaterial->~BSLightingShaderMaterialBase();
 								RE::free(newMaterial);
@@ -593,8 +593,8 @@ namespace SET
 							}
 
 							lightingShader->SetMaterial(newMaterial, true);
-							lightingShader->InitializeGeometry(a_geometry);
-							lightingShader->InitializeShader(a_geometry);
+							lightingShader->SetupGeometry(a_geometry);
+							lightingShader->FinishSetupGeometry(a_geometry);
 
 							newMaterial->~BSLightingShaderMaterialBase();
 							RE::free(newMaterial);
@@ -644,14 +644,14 @@ namespace SET
 		using Feature = RE::BSShaderMaterial::Feature;
 		using Texture = RE::BSTextureSet::Texture;
 		using Flags = RE::BSShaderProperty::EShaderPropertyFlag8;
-		using VertexFlags = RE::NiSkinPartition::Vertex::Flags;
+		using VertexFlags = RE::BSGraphics::Vertex::Flags;
 
 		const bool noWeap = a_params[0];
 		const bool noAlpha = a_params[1];
 		const bool isActor = a_params[2];
 
 		RE::BSVisit::TraverseScenegraphGeometries(a_object, [&](RE::BSGeometry* a_geometry) -> RE::BSVisit::BSVisitControl {
-			if (const bool hasNormals = a_geometry->HasVertexFlag(VertexFlags::kNormal); !hasNormals) {
+			if (const bool hasNormals = a_geometry->vertexDesc.HasFlag(VertexFlags::VF_NORMAL); !hasNormals) {
 				return RE::BSVisit::BSVisitControl::kContinue;
 			}
 			if (const auto parent = a_geometry->parent; parent && parent->AsFadeNode() && noWeap && isActor) {
@@ -725,11 +725,12 @@ namespace SET
 								}
 
 								lightingShader->CopyMembers(tempLightingShader);
-								lightingShader->SetFlags(Flags::kSkinned, a_geometry->HasVertexFlag(VertexFlags::kSkinned));
+								
+								lightingShader->SetFlags(Flags::kSkinned, a_geometry->vertexDesc.HasFlag(VertexFlags::VF_SKINNED));
 
 								lightingShader->SetMaterial(newMaterial, true);
-								lightingShader->InitializeGeometry(a_geometry);
-								lightingShader->InitializeShader(a_geometry);
+								lightingShader->SetupGeometry(a_geometry);
+								lightingShader->FinishSetupGeometry(a_geometry);
 
 								newMaterial->~BSLightingShaderMaterialBase();
 								RE::free(newMaterial);
