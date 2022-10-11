@@ -53,6 +53,7 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
 	v.PluginName("Proteus");
 
 	v.UsesAddressLibrary(true);
+	v.HasNoStructUse(true);
 
 	return v;
 }();
