@@ -12,23 +12,14 @@ namespace Papyrus::Form
 			inline void favorite(RE::InventoryChanges* a_changes, RE::InventoryEntryData* a_entryData, RE::ExtraDataList* a_list)
 			{
 				using func_t = decltype(&favorite);
-#if ANNIVERSARY_EDITION
-				REL::Relocation<func_t> func{ REL::ID(16098) };
-				
-#else
-				REL::Relocation<func_t> func{ REL::ID(15858) };
-#endif
+				auto func = (func_t)RELOCATION_ID(15858, 16098).address();
 				return func(a_changes, a_entryData, a_list);
 			}
 
 			inline void unfavorite(RE::InventoryChanges* a_changes, RE::InventoryEntryData* a_entryData, RE::ExtraDataList* a_list)
 			{
 				using func_t = decltype(&unfavorite);
-#if ANNIVERSARY_EDITION
-				REL::Relocation<func_t> func{ REL::ID(16099) };
-#else
-				REL::Relocation<func_t> func{ REL::ID(15859) };
-#endif
+				auto func = (func_t)RELOCATION_ID(15859, 16099).address();
 				return func(a_changes, a_entryData, a_list);
 			}
 
@@ -51,22 +42,14 @@ namespace Papyrus::Form
 			inline void favorite(RE::MagicFavorites* a_magicFavorites, RE::TESForm* a_form)
 			{
 				using func_t = decltype(&favorite);
-#if ANNIVERSARY_EDITION
-				REL::Relocation<func_t> func{ REL::ID(52004) };
-#else
-				REL::Relocation<func_t> func{ REL::ID(51121) };
-#endif
+				auto func = (func_t)RELOCATION_ID(51121, 52004).address();
 				return func(a_magicFavorites, a_form);
 			}
 
 			inline void unfavorite(RE::MagicFavorites* a_magicFavorites, RE::TESForm* a_form)
 			{
 				using func_t = decltype(&unfavorite);
-#if ANNIVERSARY_EDITION
-				REL::Relocation<func_t> func{ REL::ID(52005) };
-#else
-				REL::Relocation<func_t> func{ REL::ID(51122) };
-#endif
+				auto func = (func_t)RELOCATION_ID(51122, 52005).address();
 				return func(a_magicFavorites, a_form);
 			}
 		}
