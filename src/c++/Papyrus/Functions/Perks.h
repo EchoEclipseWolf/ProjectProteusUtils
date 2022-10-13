@@ -29,10 +29,12 @@ namespace Papyrus::Perk
 			return result;
 		}
 
-		if (const auto player = RE::PlayerCharacter::GetSingleton(); player == a_actor) {
-			if (const auto perkArray = player->GetPlayerRuntimeData().addedPerks; !perkArray.empty()) {
-				for (const auto perkData : perkArray) {
-					if (const auto perk = perkData->perk; perk) {
+		if (a_actor->As<RE::PlayerCharacter>() != nullptr) {
+			auto player = a_actor->As<RE::PlayerCharacter>();
+			auto perkArray = player->GetPlayerRuntimeData().addedPerks;
+			if ( !perkArray.empty()) {
+				for (auto perkData : perkArray) {
+					if (auto perk = perkData->perk; perk) {
 						result.emplace_back(perk);
 					}
 				}
