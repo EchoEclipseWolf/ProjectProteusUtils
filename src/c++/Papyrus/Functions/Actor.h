@@ -97,6 +97,9 @@ namespace Papyrus::Actor
 		//a_actor->VisitFactions(factionVisitor);
 
 		std::vector<RE::TESFaction*> result;
+		if (a_actor == nullptr) {
+			return result;
+		}
 
 		const auto npc = a_actor->GetActorBase();
 		if (npc == nullptr) {

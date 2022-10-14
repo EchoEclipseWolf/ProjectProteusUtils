@@ -29,9 +29,10 @@ namespace Papyrus::Perk
 			return result;
 		}
 
-		if (a_actor->As<RE::PlayerCharacter>() != nullptr) {
-			auto player = a_actor->As<RE::PlayerCharacter>();
-			auto perkArray = player->GetPlayerRuntimeData().addedPerks;
+		if (const auto player = RE::PlayerCharacter::GetSingleton(); player == a_actor) {
+			const auto& playerData = player->GetPlayerRuntimeData();
+			const auto& playerDataPtr = &playerData;
+			const auto& perkArray = playerDataPtr->addedPerks;
 			if ( !perkArray.empty()) {
 				for (auto perkData : perkArray) {
 					if (auto perk = perkData->perk; perk) {
@@ -91,6 +92,10 @@ namespace Papyrus::Perk
 	inline auto GetAllVisiblePerks(VM* a_vm, StackID a_stackID, RE::StaticFunctionTag* tag, const RE::Actor* a_actor)
 	{
 		std::vector<RE::BGSPerk*> result;
+
+		if (!a_actor) {
+			return result;
+		}
 
 		const auto avl = RE::ActorValueList::GetSingleton();
 		if (avl == nullptr) {
