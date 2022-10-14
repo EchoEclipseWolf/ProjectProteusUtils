@@ -15,7 +15,6 @@ set(headers ${headers}
 	src/C++/Papyrus/Game/DataMap.h
 	src/C++/Papyrus/Game/DataSet.h
 	src/C++/Papyrus/Game/Graphics.h
-	src/C++/Papyrus/Game/versiondb.h
 	src/C++/Papyrus/Papyrus.h
 	src/C++/robin_hood.h
 	src/C++/BinaryTools/Span.h

@@ -3,12 +3,6 @@
 #include "spdlog/sinks/basic_file_sink.h"
 #include "Papyrus/Game/EditorIdCache.h"
 
-#if ANNIVERSARY_EDITIO
-
-#else
-#include "Papyrus/Game/versiondb.h"
-#endif
-
 #define NDEBUG
 
 namespace
@@ -50,7 +44,7 @@ namespace
 		spdlog::set_pattern("%g(%#): [%^%l%$] %v"s);
 	}
 }
-#if ANNIVERSARY_EDITION
+
 
 extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
 	SKSE::PluginVersionData v;
@@ -59,12 +53,10 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
 	v.PluginName("Proteus");
 
 	v.UsesAddressLibrary(true);
-	v.CompatibleVersions({ SKSE::RUNTIME_LATEST });
+	v.HasNoStructUse(true);
 
 	return v;
 }();
-
-#else
 
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
 {
@@ -77,7 +69,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a
 	}
 
 	const auto ver = a_skse->RuntimeVersion();
-	if (ver < SKSE::RUNTIME_1_5_39) {
+	if (ver < SKSE::RUNTIME_SSE_1_5_39) {
 		return false;
 	}
 
@@ -89,8 +81,6 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a
 
 	return true;
 }
-
-#endif
 
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
 {

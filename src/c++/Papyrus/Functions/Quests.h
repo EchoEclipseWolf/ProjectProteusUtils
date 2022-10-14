@@ -463,7 +463,7 @@ namespace Papyrus::Quests
 	inline auto SaveCharacterQuestObjectives(BinaryWriter& wf)
 	{
 		const auto player = RE::PlayerCharacter::GetSingleton();
-		const auto objectives = player->objectives;
+		const auto objectives = player->GetPlayerRuntimeData().objectives;
 
 		wf.WriteUint64(objectives.size());
 
@@ -482,24 +482,24 @@ namespace Papyrus::Quests
 	inline auto LoadCharacterQuestObjectives(BinaryReader& rf)
 	{
 		const auto player = RE::PlayerCharacter::GetSingleton();
-
+		auto playerObjectives = player->GetPlayerRuntimeData().objectives;
 		const auto newCount = rf.ReadUint64();
 
-		for (uint64_t i = 0; i < player->objectives.size(); ++i) {
-			const auto address = reinterpret_cast<uint64_t*>(&player->objectives[i]);
-			const auto address2 = reinterpret_cast<uint64_t*>(reinterpret_cast<uint64_t>(&player->objectives[i]) + static_cast<uint64_t>(0x8));
+		for (uint64_t i = 0; i < playerObjectives.size(); ++i) {
+			const auto address = reinterpret_cast<uint64_t*>(&playerObjectives[i]);
+			const auto address2 = reinterpret_cast<uint64_t*>(reinterpret_cast<uint64_t>(&playerObjectives[i]) + static_cast<uint64_t>(0x8));
 			*address = 0;
 			*address2 = 0;
 		}
 
-		player->objectives.resize(newCount);
+		playerObjectives.resize(newCount);
 
 		//AllocInstanceArray2(reinterpret_cast<uint64_t>(&player->objectives), newCount, 8);
-		SetArrayCount(reinterpret_cast<uint64_t>(&player->objectives), newCount);
+		SetArrayCount(reinterpret_cast<uint64_t>(&playerObjectives), newCount);
 
 		for (uint64_t i = 0; i < newCount; ++i) {
-			const auto address = reinterpret_cast<uint64_t*>(&player->objectives[i]);
-			const auto address2 = reinterpret_cast<uint64_t*>(reinterpret_cast<uint64_t>(&player->objectives[i]) + static_cast<uint64_t>(0x8));
+			const auto address = reinterpret_cast<uint64_t*>(&playerObjectives[i]);
+			const auto address2 = reinterpret_cast<uint64_t*>(reinterpret_cast<uint64_t>(&playerObjectives[i]) + static_cast<uint64_t>(0x8));
 			*address = 0;
 			*address2 = 0;
 		}
@@ -519,7 +519,7 @@ namespace Papyrus::Quests
 			const auto instanceId = rf.ReadUint32();
 			const auto instanceState = rf.ReadUint8();
 
-			const auto arrayObjective = &(player->objectives[static_cast<uint32_t>(i)]);
+			const auto arrayObjective = &(playerObjectives[static_cast<uint32_t>(i)]);
 
 			if (questObjective != nullptr) {
 				arrayObjective->Objective = questObjective;

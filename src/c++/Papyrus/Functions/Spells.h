@@ -9,11 +9,11 @@ namespace Papyrus::Spell
 			return result;
 		}
 
-		for (auto spell : a_actor->addedSpells) {
+		for (auto spell : a_actor->GetActorRuntimeData().addedSpells) {
 			result.emplace_back(spell);
 		}
 
-		const auto race = a_actor->race;
+		const auto race = a_actor->GetActorRuntimeData().race;
 		if (race != nullptr && race->actorEffects != nullptr && race->actorEffects->numSpells > 0) {
 			const auto raceSpellCount = race->actorEffects->numSpells;
 			for (uint32_t i = 0; i < raceSpellCount; ++i) {
@@ -107,7 +107,7 @@ namespace Papyrus::Spell
 			return result;
 		}
 
-		const auto race = a_actor->race;
+		const auto race = a_actor->GetActorRuntimeData().race;
 		const auto raceSpellCount = race->actorEffects->numShouts;
 		for (uint32_t i = 0; i < raceSpellCount; ++i) {
 			const auto shout = race->actorEffects->shouts[i];
